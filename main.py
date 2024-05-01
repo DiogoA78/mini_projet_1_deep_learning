@@ -6,6 +6,8 @@ from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 from datetime import datetime
 import matplotlib.pyplot as plt
+from NN import predict_aqi
+
 
 def collect_aqi_data(capital_list, api_url, api_key):
     aqi_data = []
@@ -45,7 +47,7 @@ Capital_df = pd.read_csv("country-list.csv")
 api_url = "http://api.waqi.info/feed/{}/?token={}"
 api_key = "7d53b1063e3f113e01ff8189283f1578da695000"
 
-menu = ["ACCUEIL", "GET DATA", "MAP", "GRAPHS"]
+menu = ["ACCUEIL", "GET DATA", "MAP", "GRAPHS", "PREDICTION"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 # Page ACCUEIL
@@ -153,3 +155,12 @@ elif choice == "GRAPHS":
         colorbar = fig.colorbar(scatter)
         colorbar.set_label('AQI')
         st.pyplot(fig)
+
+
+elif choice == "PREDICTION":
+    st.title("Prédiction de la Qualité de l'Air")
+    city = st.selectbox('Sélectionnez une ville', options=pd.read_csv("AQI.csv")['City'].unique())
+    date = st.date_input("Sélectionnez une date", min_value=datetime(2024, 5, 1))
+    if st.button('Prédire'):
+        prediction = predict_aqi(city, date)
+        st.write(f"La valeur prédite de l'AQI pour {city} le {date} est {prediction}")
