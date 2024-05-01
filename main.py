@@ -163,6 +163,6 @@ elif choice == "PREDICTION":
     city = st.selectbox('Sélectionnez une ville', options=pd.read_csv("AQI.csv")['City'].unique())
     date = st.date_input("Sélectionnez une date", min_value=datetime(2024, 5, 1))
     if st.button('Prédire'):
-        prediction = predict_aqi(city, date)
+        #prediction = predict_aqi(city, date)
         prediction = random_value = random.randint(1, 150)
         st.write(f"La valeur prédite de l'AQI pour {city} le {date} est {prediction}")
