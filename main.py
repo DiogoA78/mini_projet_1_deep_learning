@@ -6,8 +6,8 @@ from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 from datetime import datetime
 import matplotlib.pyplot as plt
-from NN import predict_aqi
-import random
+from NN import predict_aqi, encoder, model
+
 
 
 def collect_aqi_data(capital_list, api_url, api_key):
@@ -122,8 +122,8 @@ elif choice == "GRAPHS":
     if 'aqi_data' in st.session_state:
         aqi_df_valid = st.session_state['aqi_data']
 
-        st.write("Villes et leur Indice de Qualité de l'Air (AQI)")
-        st.table(aqi_df_valid)
+        #st.write("Villes et leur Indice de Qualité de l'Air (AQI)")
+        #st.table(aqi_df_valid)
 
         # Histogramme des AQI
         st.subheader("Histogramme de la Distribution des AQI")
@@ -157,12 +157,13 @@ elif choice == "GRAPHS":
         colorbar.set_label('AQI')
         st.pyplot(fig)
 
-
 elif choice == "PREDICTION":
     st.title("Prédiction de la Qualité de l'Air")
     city = st.selectbox('Sélectionnez une ville', options=pd.read_csv("AQI.csv")['City'].unique())
     date = st.date_input("Sélectionnez une date", min_value=datetime(2024, 5, 1))
-    if st.button('Prédire'):
-        #prediction = predict_aqi(city, date)
-        prediction = random_value = random.randint(1, 150)
-        st.write(f"La valeur prédite de l'AQI pour {city} le {date} est {prediction}")
+    if st.button('Predict AQI'):
+        date_time = datetime.combine(date, datetime.min.time())
+        prediction = predict_aqi(city, date_time.strftime('%Y-%m-%d %H:%M:%S'), encoder, model)
+        rounded_predicted_aqi = int(round(prediction))
+        rounded_predicted_aqi = rounded_predicted_aqi / 4
+        st.write(f'Predicted AQI for {city} on {date}: {rounded_predicted_aqi}')
